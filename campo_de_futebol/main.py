@@ -16,6 +16,7 @@ def init():
     glMatrixMode(GL_MODELVIEW)
 
 def display():
+    global BALL_DX, BALL_DY, BALL_EX, BALL_EZ
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
 
@@ -23,9 +24,11 @@ def display():
     draw_field(width= 20, depth= 10, thickness=2)
     draw_goal()
     draw_lines()
+    draw_ball(0.5, BALL_DX, BALL_DY, BALL_EX, BALL_EZ)
     glutSwapBuffers()
 
 def keyboard_handler(key, x, y):
+    global BALL_DX, BALL_DY, BALL_EX, BALL_EZ
     eye, center, up = vision.get()
     key = key.lower()
 
@@ -35,21 +38,20 @@ def keyboard_handler(key, x, y):
     if key == b"w":
         eye.z -= 1
 
+    elif key == b"a":
+        eye.x -= 1
+
     elif key == b"s":
         eye.z += 1
 
     elif key == b"d":
         eye.x += 1 
 
-    elif key == b"a":
-        eye.x -= 1
-
     elif key == b"q":
         eye.y += 1
 
     elif key == b"e":
         eye.y -= 1
-
     
     elif key == b"i": 
         center.z -= 1
@@ -67,35 +69,20 @@ def keyboard_handler(key, x, y):
         center.y += 1
 
     elif key == b"o":
-        center.y -= 1
+        center.y -= 1 
 
-    elif key == b"f":
-        if up.x != 0:
-            up.x *= -1 
-        else: 
-            up.x = 1
-        
-        up.y = 0
-        up.z = 0
-
-    elif key == b"g":
-        if up.y != 0: 
-            up.y *= -1
-        else: 
-            up.y = 1
-        
-        up.x = 0
-        up.z = 0
-
-    elif key == b"h":
-        if up.z != 0: # Se já estiver orientado no eixo z
-            up.z *= -1   # Inverte a câmera
-        else: 
-            up.z = 1
-        
-        up.x = 0
-        up.y = 0
-
+    elif key == b'3':
+        BALL_DX += 0.2
+        BALL_EX = 0; BALL_EZ = 1
+    elif key == b'1':
+        BALL_DX -= 0.2
+        BALL_EX = 0; BALL_EZ = 1
+    elif key == b'2':
+        BALL_DY += 0.2
+        BALL_EX = 1; BALL_EZ = 0
+    elif key == b'5':
+        BALL_DY -= 0.2
+        BALL_EX = 1; BALL_EZ = 0
     update_camera()
 
     glutPostRedisplay()
@@ -107,6 +94,7 @@ def timer(v):
     glutPostRedisplay()
 
     glutTimerFunc(DELAY, timer, v)
+
 
 def main():
     glutInit(sys.argv)
