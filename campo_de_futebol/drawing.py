@@ -3,7 +3,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from constants import *
 from math import sin, cos, pi
-
+from time import sleep
 def draw_field(width, depth, thickness):
     offset = 2 * thickness 
 
@@ -55,7 +55,8 @@ def draw_lines():
     glEnd()
     """
     bresenham((0,-4.5), (0,4.5))
-    draw_circle(0, 0, 1.8)
+    bresenham_circle(1.8)
+    #draw_circle(0, 0, 1.8)
     # Áreas
     draw_goal_areas(width=3, height=5)
     draw_goal_areas(width=1.5, height=7)
@@ -72,6 +73,10 @@ def draw_lines():
 def draw_goal_areas(width, height):
     h = -3
     # Esquerda
+    bresenham((-height, -width), (-height, width))
+    bresenham((-8.5, width), (-height, width))
+    bresenham((-8.5, -width), (-height, -width))
+    """
     glBegin(GL_LINES)
     glVertex3f(-height, h, width)
     glVertex3f(-height, h, -width)
@@ -80,6 +85,7 @@ def draw_goal_areas(width, height):
     glVertex3f(-height, h, -width)
     glVertex3f(-8.5, h, -width)
     glEnd()
+    """
     # Direita
     glBegin(GL_LINES)
     glVertex3f(height, h, width)
@@ -138,11 +144,10 @@ def bresenham(p, q):
     glPointSize(10)
     glBegin(GL_POINTS)
     x, y = x1, y1
-    if x == x2 and abs(y) == abs(y2):
+    if x == x2:
         simple_line_draw(x, y, y2)
     else:
         while x <= x2 or y <= y2:
-            print(f'[{x}][{y}]')
             glVertex3f(x, -3, y)
             if d <= 0:
                 d += delta_E
@@ -151,8 +156,9 @@ def bresenham(p, q):
                 d += delta_NE
                 x += 0.1
                 y += 0.1
-
-    glVertex3f(x, -3, y)
+            if x > x2 or y > y2:
+                break
+        glVertex3f(x, -3, y)
     glEnd()
 
 def simple_line_draw(x, y, y2):
@@ -163,20 +169,21 @@ def simple_line_draw(x, y, y2):
 def bresenham_circle(r):
     x = 0
     y = r
-    d = 5/4 - r
-    circle_points(x, y);
-    while (y > x):
-        if d < 0:
-            d = d + 2 * x + 3
-            x += 1
+    d = 3 - 2 * r
+    circle_points(x, y)
+    while (y >= x):
+        if d <= 0:
+            d = d + 0.01 * x + 0.015
+            x += 0.05
         else:
-            d = d + 2 * (x - y) + 5
-            x += 1
-            y -= 1
+            d = d + 0.01 * (x - y) + 0.025
+            x += 0.05
+            y -= 0.05
         circle_points(x, y)
 
 
 def circle_points(x, y):
+    glBegin(GL_POINTS)
     glVertex3f(x,-3,y)
     glVertex3f(x, -3, -y)
     glVertex3f(-x, -3, y)
@@ -185,3 +192,4 @@ def circle_points(x, y):
     glVertex3f(y, -3, -x)
     glVertex3f(-y, -3, x)
     glVertex3f(-y, -3, -x)
+    glEnd()
