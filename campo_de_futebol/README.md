@@ -10,3 +10,4 @@ Modela um campo de futebol em 3D com movimentação de câmera
 - No terminal, execute: <br>
 ``` python3 main.py ```
 - Controle a câmera utilizando WASD para se movimentar e QE para regular a altura da câmera
+- Controle a bola com o teclado numérico 5123
