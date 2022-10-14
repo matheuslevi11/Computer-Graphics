@@ -133,6 +133,55 @@ def draw_ball(r, dx, dy, ex, ez):
     
     glPopMatrix()
 
+def draw_scoreboard(p1, p2):
+    width = 4
+    depth = 2
+    thickness = 1
+    offset = 2 * thickness 
+
+    glColor4f(0.35, 0.71, 0.94, 0)
+    glPushMatrix()
+    glTranslatef(0, +offset, 0)
+    glRotatef(90, 1, 0, 0)
+    glScalef(width, thickness , depth)
+    glutWireCube(1)
+    glPopMatrix()
+
+    draw_bar(offset, 0)
+    glPointSize(13)
+    
+    glColor4f(0.12, 0.9, 0.3, 0) # Cor do time esquerdo
+    x = -1.8; y = 2.5
+    for i in range(p1):
+        glBegin(GL_POINTS)
+        glVertex3f(x, y, 0)
+        x += 0.3
+        if x > 0:
+            x = -1.8
+            y -= 0.3
+        glEnd()
+
+    glColor4f(0.8, 0.2, 0.6, 0) # Cor do time direito
+    x = 0.5; y = 2.5
+    for i in range(p2):
+        glBegin(GL_POINTS)
+        glVertex3f(x, y, 0)
+        x += 0.3
+        if x > 1.8:
+            x = 0.5
+            y -= 0.3
+        glEnd()
+    
+    glPointSize(10)
+
+def draw_bar(offset, dx):
+    glPushMatrix()
+    glTranslatef(dx, +offset, 0)
+    glRotatef(90, 1, 0, 0)
+    glScalef(0.3, 1.3, 1.9)
+    glutSolidCube(1)
+    glPopMatrix()
+
 def bresenham(p, q):
     x1, y1 = p
     x2, y2 = q

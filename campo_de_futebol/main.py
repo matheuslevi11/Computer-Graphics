@@ -25,10 +25,11 @@ def display():
     draw_goal()
     draw_lines()
     draw_ball(0.5, BALL_DX, BALL_DY, BALL_EX, BALL_EZ)
+    draw_scoreboard(SCORE_LEFT, SCORE_RIGHT)
     glutSwapBuffers()
 
 def keyboard_handler(key, x, y):
-    global BALL_DX, BALL_DY, BALL_EX, BALL_EZ
+    global BALL_DX, BALL_DY, BALL_EX, BALL_EZ, SCORE_LEFT, SCORE_RIGHT
     eye, center, up = vision.get()
     key = key.lower()
 
@@ -65,7 +66,7 @@ def keyboard_handler(key, x, y):
     elif key == b"j":
         center.x -= 1 
 
-    elif key == b"u": 
+    elif key == b"u":
         center.y += 1
 
     elif key == b"o":
@@ -74,9 +75,18 @@ def keyboard_handler(key, x, y):
     elif key == b'3':
         BALL_DX += 0.2
         BALL_EX = 0; BALL_EZ = 1
+
+        if BALL_DX == 9 and (-1.2 <= BALL_DY <= 1.4):
+            SCORE_RIGHT += 1
+            BALL_DX = 0; BALL_DY = 0
     elif key == b'1':
         BALL_DX -= 0.2
         BALL_EX = 0; BALL_EZ = 1
+
+        if BALL_DX == -9 and (-1.4 <= BALL_DY <= 1.2):
+            SCORE_LEFT += 1
+            BALL_DX = 0; BALL_DY = 0
+
     elif key == b'2':
         BALL_DY += 0.2
         BALL_EX = 1; BALL_EZ = 0
