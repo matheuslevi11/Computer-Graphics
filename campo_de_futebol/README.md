@@ -1,6 +1,8 @@
 # Campo de Futebol em OpenGL
 
-Modela um campo de futebol em 3D com movimentação de câmera
+Modela um campo de futebol em 3D com movimentação de câmera. Feito pelos alunos(as):
+- Matheus Levi Rodrigues Aidano
+- Giuliana Castro Diegues Arecippo
 
 ## Preparação
 - Certifique-se que está na pasta correta (Computer-Graphics/campo_de_futebol)
