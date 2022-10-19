@@ -2,8 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from constants import *
-from math import sin, cos, pi
-from time import sleep
+from math import sin, cos, tan, pi
+
 def draw_field(width, depth, thickness):
     offset = 2 * thickness 
 
@@ -19,7 +19,7 @@ def draw_cilinder(radius, height, angle, z, x):
     glPushMatrix()
     glTranslate(x, 0.8, z);
     glRotate(angle, 1.0, 0.0, 0.0);
-    glutWireCylinder(radius, height, SLICES, STACKS)
+    glutSolidCylinder(radius, height, SLICES, STACKS)
     glPopMatrix()
 
 def draw_goal():
@@ -41,12 +41,14 @@ def draw_lines():
     h = -3
     glLineWidth(10)
     # Bordas
+    glPointSize(5)
     glBegin(GL_LINE_LOOP)
     glVertex3f(-8.5, h, -4.5)
     glVertex3f(8.5, h, -4.5)
     glVertex3f(8.5, h, 4.5)
     glVertex3f(-8.5, h, 4.5)
     glEnd()
+    glPointSize(10)
     # Centro
     """
     glBegin(GL_LINES)
@@ -63,7 +65,7 @@ def draw_lines():
     draw_semicircle(-5, 0, 1, 1)
     draw_semicircle(-5, 0, 1, -1)
     # Pontos
-    glPointSize(11)
+    glPointSize(10)
     glBegin(GL_POINTS)
     glVertex3f(0, h, 0)
     glVertex3f(-6, h, 0)
@@ -97,6 +99,7 @@ def draw_goal_areas(width, height):
     glEnd()
 
 def draw_circle(x, y, radius):
+    """
     h = -3
     p = 10000 # Precisão ( quantidade de vértices )
 	
@@ -106,18 +109,22 @@ def draw_circle(x, y, radius):
         b = y + (radius* sin(i * 2*pi / p))
         glVertex3f(a, h, b)
     glEnd()
+    """
 
 def draw_semicircle(x, y, radius, side):
     h = -3
-    p = 10000 # Precisão ( quantidade de vértices )
-	
+    iterator = []
+    n = 0
+    while n <= pi:
+        iterator.append(n)
+        n += 0.001
     glBegin(GL_LINE_LOOP)
-    for i in range(p+1):
-        a = x + (radius * cos(i *  2*pi / p))
-        b = y + (radius* sin(i * 2*pi / p))
-        if a > x:
-            glVertex3f(a*side, h, b*side)
+    for i in iterator:
+        a = x + (radius * sin(i))
+        b = y + (radius* cos(i))
+        glVertex3f(a*side, h, b*side)
     glEnd()
+
 
 def draw_ball(r, dx, dy, ex, ez):
     glLineWidth(1.2)
@@ -190,7 +197,7 @@ def bresenham(p, q):
     delta_E = 2*dy
     delta_NE = 2 * (dy-dx)
     d = 2 * dy - dx
-    glPointSize(10)
+    glPointSize(5)
     glBegin(GL_POINTS)
     x, y = x1, y1
     if x == x2:
@@ -200,11 +207,11 @@ def bresenham(p, q):
             glVertex3f(x, -3, y)
             if d <= 0:
                 d += delta_E
-                x += 0.1
+                x += 0.01
             else:
                 d += delta_NE
-                x += 0.1
-                y += 0.1
+                x += 0.01
+                y += 0.01
             if x > x2 or y > y2:
                 break
         glVertex3f(x, -3, y)
@@ -213,7 +220,7 @@ def bresenham(p, q):
 def simple_line_draw(x, y, y2):
     while y < y2:
         glVertex3f(x, -3, y)
-        y += 0.1
+        y += 0.01
 
 def bresenham_circle(r):
     x = 0
@@ -222,12 +229,12 @@ def bresenham_circle(r):
     circle_points(x, y)
     while (y >= x):
         if d <= 0:
-            d = d + 0.01 * x + 0.015
-            x += 0.05
+            d = d + CIRCLE_D * x + CIRCLE_X
+            x += 0.01
         else:
-            d = d + 0.01 * (x - y) + 0.025
-            x += 0.05
-            y -= 0.05
+            d = d + CIRCLE_D * (x - y) + CIRCLE_X
+            x += 0.01
+            y -= 0.01
         circle_points(x, y)
 
 
