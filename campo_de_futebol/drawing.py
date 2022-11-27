@@ -22,19 +22,19 @@ def draw_cilinder(radius, height, angle, z, x):
     glutSolidCylinder(radius, height, SLICES, STACKS)
     glPopMatrix()
 
-def draw_goal():
+def draw_goals():
     draw_cilinder(radius=0.1, height=3.75, angle=90,
     z=GOAL_SIZE, x=GOAL_DISTANCE)
     draw_cilinder(radius=0.1, height=3.75, angle=90,
     z=-GOAL_SIZE, x=GOAL_DISTANCE)
-    draw_cilinder(radius=0.1, height=4, angle=0,
+    draw_cilinder(radius=0.1, height=5, angle=0,
     z=-GOAL_SIZE, x=GOAL_DISTANCE)
 
     draw_cilinder(radius=0.1, height=3.75, angle=90,
     z=GOAL_SIZE, x=-GOAL_DISTANCE)
     draw_cilinder(radius=0.1, height=3.75, angle=90,
     z=-GOAL_SIZE, x=-GOAL_DISTANCE)
-    draw_cilinder(radius=0.1, height=4, angle=0,
+    draw_cilinder(radius=0.1, height=5, angle=0,
     z=-GOAL_SIZE, x=-GOAL_DISTANCE)
 
 def draw_lines():
@@ -43,49 +43,49 @@ def draw_lines():
     # Bordas
     glPointSize(5)
     glBegin(GL_LINE_LOOP)
-    glVertex3f(-8.5, h, -4.5)
-    glVertex3f(8.5, h, -4.5)
-    glVertex3f(8.5, h, 4.5)
-    glVertex3f(-8.5, h, 4.5)
+    glVertex3f(-GOAL_DISTANCE, h, -LINE_DISTANCE)
+    glVertex3f(GOAL_DISTANCE, h, -LINE_DISTANCE)
+    glVertex3f(GOAL_DISTANCE, h, LINE_DISTANCE)
+    glVertex3f(-GOAL_DISTANCE, h, LINE_DISTANCE)
     glEnd()
     glPointSize(10)
     # Centro
     """
     glBegin(GL_LINES)
-    glVertex3f(0, h, 4.5)
-    glVertex3f(0, h, -4.5)
+    glVertex3f(0, h, LINE_DISTANCE)
+    glVertex3f(0, h, -LINE_DISTANCE)
     glEnd()
     """
-    bresenham((0,-4.5), (0,4.5))
-    bresenham_circle(1.8)
+    bresenham((0,-LINE_DISTANCE), (0,LINE_DISTANCE))
+    bresenham_circle(3)
     #draw_circle(0, 0, 1.8)
     # Áreas
-    draw_goal_areas(width=3, height=5)
-    draw_goal_areas(width=1.5, height=7)
-    draw_semicircle(-5, 0, 1, 1)
-    draw_semicircle(-5, 0, 1, -1)
+    draw_goal_areas(width=7, height=12.5)
+    draw_goal_areas(width=4, height=16.5)
+    draw_semicircle(-12.5, 0, 2, 1)
+    draw_semicircle(-12.5, 0, 2, -1)
     # Pontos
     glPointSize(10)
     glBegin(GL_POINTS)
     glVertex3f(0, h, 0)
-    glVertex3f(-6, h, 0)
-    glVertex3f(6, h, 0)
+    glVertex3f(-15, h, 0)
+    glVertex3f(15, h, 0)
     glEnd()
 
 def draw_goal_areas(width, height):
     h = -3
     # Esquerda
     bresenham((-height, -width), (-height, width))
-    bresenham((-8.5, width), (-height, width))
-    bresenham((-8.5, -width), (-height, -width))
+    bresenham((-GOAL_DISTANCE, width), (-height, width))
+    bresenham((-GOAL_DISTANCE, -width), (-height, -width))
     """
     glBegin(GL_LINES)
     glVertex3f(-height, h, width)
     glVertex3f(-height, h, -width)
     glVertex3f(-height, h, width)
-    glVertex3f(-8.5, h, width)
+    glVertex3f(-GOAL_DISTANCE, h, width)
     glVertex3f(-height, h, -width)
-    glVertex3f(-8.5, h, -width)
+    glVertex3f(-GOAL_DISTANCE, h, -width)
     glEnd()
     """
     # Direita
@@ -93,9 +93,9 @@ def draw_goal_areas(width, height):
     glVertex3f(height, h, width)
     glVertex3f(height, h, -width)
     glVertex3f(height, h, width)
-    glVertex3f(8.5, h, width)
+    glVertex3f(GOAL_DISTANCE, h, width)
     glVertex3f(height, h, -width)
-    glVertex3f(8.5, h, -width)
+    glVertex3f(GOAL_DISTANCE, h, -width)
     glEnd()
 
 def draw_circle(x, y, radius):
@@ -155,29 +155,10 @@ def draw_scoreboard(p1, p2):
     glPopMatrix()
 
     draw_bar(offset, 0)
-    glPointSize(13)
     
-    glColor4f(0.12, 0.9, 0.3, 0) # Cor do time esquerdo
-    x = -1.8; y = 2.5
-    for i in range(p1):
-        glBegin(GL_POINTS)
-        glVertex3f(x, y, 0)
-        x += 0.3
-        if x > 0:
-            x = -1.8
-            y -= 0.3
-        glEnd()
-
-    glColor4f(0.8, 0.2, 0.6, 0) # Cor do time direito
-    x = 0.5; y = 2.5
-    for i in range(p2):
-        glBegin(GL_POINTS)
-        glVertex3f(x, y, 0)
-        x += 0.3
-        if x > 1.8:
-            x = 0.5
-            y -= 0.3
-        glEnd()
+    glLineWidth(5)    
+    draw_score(p1, 'left')
+    draw_score(p2, 'right')
     
     glPointSize(10)
 
@@ -188,6 +169,44 @@ def draw_bar(offset, dx):
     glScalef(0.3, 1.3, 1.9)
     glutSolidCube(1)
     glPopMatrix()
+
+def draw_score(score, side):
+    x, y = set_score_pos(side)
+    offset = 0.7
+    if 0 <= score <= 9:
+        number = Number(SCORE_NUMBERS[score], side)
+    else:
+        number = Number(SCORE_NUMBERS[9], side)
+    glBegin(GL_LINES)
+    # Linhas Horizontais
+    y = draw_line(x, y, x+1, y, number)
+    y = draw_line(x, y, x+1, y, number)
+    y = draw_line(x, y, x+1, y, number)
+    # Linhas Verticais
+    x, y = set_score_pos(side)
+    y = draw_line(x, y, x, y-offset, number)
+    y = draw_line(x, y, x, y-offset, number)
+    y += 2*offset; x += 1
+    y = draw_line(x, y, x, y-offset, number)
+    y = draw_line(x, y, x, y-offset, number)
+
+    glEnd()
+
+def draw_line(x, y, a, b, number):
+    if number.color:
+        glColor4f(*number.get_color(), 1.0)
+        glVertex3f(x, y, 0)
+        glVertex3f(a, b, 0)
+    
+    number.next()
+    return y - 0.7
+
+def set_score_pos(side):
+    if side == 'left':
+        x = -1.5; y = 2.8
+    elif side == 'right': 
+        x = 0.5; y = 2.8
+    return x, y
 
 def bresenham(p, q):
     x1, y1 = p

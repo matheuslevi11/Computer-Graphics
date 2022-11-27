@@ -21,8 +21,8 @@ def display():
     glEnable(GL_DEPTH_TEST)
 
     glMatrixMode(GL_MODELVIEW)
-    draw_field(width= 20, depth= 10, thickness=2)
-    draw_goal()
+    draw_field(width=40, depth=20, thickness=2)
+    draw_goals()
     draw_lines()
     draw_ball(0.5, BALL_DX, BALL_DY, BALL_EX, BALL_EZ)
     draw_scoreboard(SCORE_LEFT, SCORE_RIGHT)
@@ -76,14 +76,15 @@ def keyboard_handler(key, x, y):
         BALL_DX += 0.2
         BALL_EX = 0; BALL_EZ = 1
 
-        if BALL_DX == 9 and (-1.2 <= BALL_DY <= 1.4):
+        if BALL_DX >= 19.5 and (-2 <= BALL_DY <= 2):
             SCORE_RIGHT += 1
             BALL_DX = 0; BALL_DY = 0
+
     elif key == b'1':
         BALL_DX -= 0.2
         BALL_EX = 0; BALL_EZ = 1
 
-        if BALL_DX == -9 and (-1.4 <= BALL_DY <= 1.2):
+        if BALL_DX <= -19.5 and (-2 <= BALL_DY <= 2):
             SCORE_LEFT += 1
             BALL_DX = 0; BALL_DY = 0
 
@@ -93,6 +94,7 @@ def keyboard_handler(key, x, y):
     elif key == b'5':
         BALL_DY -= 0.2
         BALL_EX = 1; BALL_EZ = 0
+
     update_camera()
 
     glutPostRedisplay()
