@@ -2,25 +2,84 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from constants import *
-from math import sin, cos, tan, pi
+from math import sin, cos, pi
 
-def draw_field(width, depth, thickness):
+def draw_field(width, depth, thickness, texture):
     offset = 2 * thickness 
-
     glColor4f(0, 0.3, 0.0, 1.0)
     glPushMatrix()
     glTranslatef(0, -offset, 0)
     glScalef(width, thickness , depth)
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+    #glBindTexture(GL_TEXTURE_2D, theTexture[2]);
+    texture.activate()
+    glutSolidCube(1)
+    glDisable(GL_TEXTURE_GEN_S)
+    glDisable(GL_TEXTURE_GEN_T)
+    texture.deactivate()
+    glPopMatrix()
+
+def draw_benches(textures):
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+    textures[0].activate()
+    
+    draw_bench([0, 0, 14], [39, 1, 10], [-45, 0, 0])
+    draw_bench([0, 0, -14], [39, 1, 10], [45, 0, 0])
+    textures[0].deactivate()
+    textures[1].activate()
+    draw_bench([23, 0, 0], [21, 1, 10], [0, 90, 45])
+    draw_bench([-23, 0, 0], [21, 1, 10], [0, 90, -45])
+    textures[1].deactivate()
+    #draw_bench(width=39, height=-2, depth=5, thickness=2, dz=14)
+    #draw_bench(width=39, height=-1, depth=7, thickness=2)
+    glDisable(GL_TEXTURE_GEN_S)
+    glDisable(GL_TEXTURE_GEN_T)
+    
+def draw_bench(translation, scale, rotation):
+    glColor4f(0.5, 0.0, 0.0, 1.0)
+    glPushMatrix()
+    glTranslatef(*translation)
+    glRotatef(rotation[2], 0.0, 0.0, 1.0)
+    glRotatef(rotation[1], 0.0, 1.0, 0.0)
+    glRotatef(rotation[0], 1.0, 0.0, 0.0)
+    glScalef(*scale)
     glutSolidCube(1)
     glPopMatrix()
 
-def draw_cilinder(radius, height, angle, z, x):
+def draw_cilinder(radius, height, angle, z, x, y=0.8):
     glColor4f(0.9, 0.9, 0.9, 1.0)
     glPushMatrix()
-    glTranslate(x, 0.8, z);
+    glTranslate(x, y, z);
     glRotate(angle, 1.0, 0.0, 0.0);
     glutSolidCylinder(radius, height, SLICES, STACKS)
     glPopMatrix()
+
+def draw_cone(base, height, angle, z, x, y=0.8):
+    glColor4f(0.9, 0.9, 0.9, 1.0)
+    glPushMatrix()
+    glTranslate(x, y, z)
+    glRotatef(angle, 0.0, 1.0, 0.0)
+    glRotatef(angle, 0.0, 0.0, 0.0)
+    glutSolidCone(base, height, SLICES, STACKS)
+    glPopMatrix()
+
+def draw_spotlights():
+    glColor3f(1.0, 0.5, 1.0)
+    draw_cilinder(radius=0.2, height=10, angle=90,
+    x=22, y=8, z=12)
+    draw_cilinder(radius=0.2, height=10, angle=90,
+    x=-22, y=8, z=12)
+    draw_cilinder(radius=0.2, height=10, angle=90,
+    x=-22, y=8, z=-12)
+    draw_cilinder(radius=0.2, height=10, angle=90,
+    x=22, y=8, z=-12)
+
+    draw_cone(base=2, height=4, angle=30, x=21, y=8, z=10)
+    draw_cone(base=2, height=4, angle=130, x=21, y=8, z=-10)
+    draw_cone(base=2, height=4, angle=-30, x=-21, y=8, z=10)
+    draw_cone(base=2, height=4, angle=-130, x=-21, y=8, z=-10)
 
 def draw_goals():
     draw_cilinder(radius=0.1, height=3.75, angle=90,
@@ -38,6 +97,7 @@ def draw_goals():
     z=-GOAL_SIZE, x=-GOAL_DISTANCE)
 
 def draw_lines():
+    glMaterialfv(GL_FRONT, GL_EMISSION, [1.0, 1.0, 1.0])
     h = -3
     glLineWidth(10)
     # Bordas
@@ -71,6 +131,7 @@ def draw_lines():
     glVertex3f(-15, h, 0)
     glVertex3f(15, h, 0)
     glEnd()
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 0.0, 0.0])
 
 def draw_goal_areas(width, height):
     h = -3
@@ -126,7 +187,10 @@ def draw_semicircle(x, y, radius, side):
     glEnd()
 
 
-def draw_ball(r, dx, dy, ex, ez):
+def draw_ball(r, dx, dy, ex, ez, texture):
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+    texture.activate()
     glLineWidth(1.2)
     glPushMatrix()    
     glTranslatef(dx, -3+r ,dy)
@@ -136,9 +200,21 @@ def draw_ball(r, dx, dy, ex, ez):
     glutSolidSphere(r, SLICES, STACKS)
     glColor4f(0, 0, 0, 0)
     glutWireSphere(r+0.001, 15, 15)
-
+    texture.deactivate()
+    glDisable(GL_TEXTURE_GEN_S)
+    glDisable(GL_TEXTURE_GEN_T)
     
     glPopMatrix()
+
+def draw_sun():
+    glPushMatrix()
+    glMaterialfv(GL_FRONT, GL_EMISSION, [1.0, 1.0, 0.0])
+    glTranslatef(0.0, 20.0, 0.0)
+    glColor3f(1,0,0)
+    glutSolidSphere(1, 50, 50)
+    glPopMatrix()
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 0.0, 0.0])
+
 
 def draw_scoreboard(p1, p2):
     width = 4
@@ -155,7 +231,7 @@ def draw_scoreboard(p1, p2):
     glPopMatrix()
 
     draw_bar(offset, 0)
-    
+
     glLineWidth(5)    
     draw_score(p1, 'left')
     draw_score(p2, 'right')

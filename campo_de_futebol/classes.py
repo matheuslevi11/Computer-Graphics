@@ -1,3 +1,6 @@
+from OpenGL.GL import *
+import pygame as pg
+
 class Vector():
     def __init__(self, x, y, z):
         self.x = x
@@ -37,4 +40,28 @@ class Number():
             return [0.12, 0.9, 0.3]
         else:
             return [0.8, 0.2, 0.6]
-        
+
+class Material:
+    def __init__(self, filepath):
+        self.texture = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, self.texture)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+        image = pg.image.load(filepath).convert_alpha()
+        image_width,image_height = image.get_rect().size
+        img_data = pg.image.tostring(image,'RGBA')
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image_width,image_height,0,GL_RGBA,GL_UNSIGNED_BYTE,img_data)
+        glGenerateMipmap(GL_TEXTURE_2D)
+
+    def activate(self):
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture)
+    
+    def deactivate(self):
+        glBindTexture(GL_TEXTURE_2D, 0)
+
+    def destroy(self):
+        glDeleteTextures(1, (self.texture,))
